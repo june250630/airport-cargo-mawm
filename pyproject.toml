@@ -1,0 +1,37 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "airport-cargo-mawm"
+version = "0.1.0"
+description = "Calibrated multi-agent world-model planning for cooperative airport cargo handling."
+readme = "README.md"
+requires-python = ">=3.10,<3.14"
+license = "Apache-2.0"
+dependencies = [
+  "gymnasium>=1.0,<2",
+  "h5py>=3.10,<4",
+  "imageio>=2.34,<3",
+  "imageio-ffmpeg>=0.5,<1",
+  "numpy>=1.26,<3",
+  "pettingzoo>=1.24,<2",
+  "torch>=2.4,<3",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+platform = ["stable-worldmodel[all]", "vmas"]
+
+[project.scripts]
+acmawm-smoke = "airport_cargo_mawm.cli.smoke:main"
+acmawm-collect = "airport_cargo_mawm.cli.collect:main"
+acmawm-train = "airport_cargo_mawm.cli.train:main"
+acmawm-evaluate = "airport_cargo_mawm.cli.evaluate:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/airport_cargo_mawm"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

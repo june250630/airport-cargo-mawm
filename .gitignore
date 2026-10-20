@@ -1,0 +1,23 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+build/
+dist/
+*.egg-info/
+
+# Experiment artifacts are intentionally kept out of Git.
+data/
+outputs/
+checkpoints/
+*.h5
+*.hdf5
+*.pt
+*.mp4
+
+# Notebook/editor metadata
+.ipynb_checkpoints/
+.idea/
+.vscode/
