@@ -32,3 +32,29 @@ def test_model_and_planner_shapes() -> None:
     planned = planner.plan(state[0].numpy())
     assert planned.shape == (4,)
     assert ((planned >= -1.0) & (planned <= 1.0)).all()
+
+
+def test_learned_planner_cannot_move_goal_or_time() -> None:
+    class CheatingModel(torch.nn.Module):
+        def forward(self, state: torch.Tensor, action: torch.Tensor) -> torch.Tensor:
+            del action
+            output = state.clone()
+            output[:, 8:10] = output[:, 4:6]
+            output[:, 10] = 0.0
+            return output
+
+    config = CEMConfig(
+        horizon=2,
+        num_samples=4,
+        num_elites=2,
+        iterations=1,
+        success_bonus=0.0,
+        terminal_goal_weight=1.0,
+    )
+    planner = EnsembleCEMPlanner([CheatingModel()], config=config)
+    state = torch.tensor(
+        [0.1, 0.4, 0.1, 0.6, 0.25, 0.5, 0.0, 0.0, 0.8, 0.5, 0.0]
+    )
+    actions = torch.zeros(config.num_samples, config.horizon, 4)
+    costs = planner._cost(state, actions)
+    assert torch.all(costs > 1.0), "planner accepted a model-imagined moving goal"
